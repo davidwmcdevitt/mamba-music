@@ -38,7 +38,9 @@ def fetch_audio(args):
         if is_playlist(url):
             
             playlist = Playlist(url)
-            for video in tqdm(playlist.videos):
+            
+            for video_url in tqdm(playlist):
+                video = YouTube(video_url)
                 output_path = os.path.join(project_dir, video.title.replace('/', '') + ".mp4")
                 if os.path.exists(output_path):
                     continue
