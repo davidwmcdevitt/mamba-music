@@ -20,28 +20,26 @@ def analyze_vocab(args):
     project_path = args.project_path
     
     project_dir = os.path.join(project_path, project_name)
-    
-    if os.path.exists(os.path.join(project_path, 'configs','vocab.yaml')):
-        
-        encoder = EncodecModel.from_pretrained("facebook/encodec_48khz")
-        processor = AutoProcessor.from_pretrained("facebook/encodec_48khz")
-        
-        sequence = []
-        
-        input_files = os.listdir(os.path.join(project_dir,'inputs'))
-        
-        for file_ in input_files:
-            
-            input_path = os.path.join(project_dir,'inputs', file_)
-            
-            audio_array, sample_rate = librosa.load(input_path, sr = processor.sampling_rate, mono = False)
-            
-            inputs = processor(raw_audio=audio_array, sampling_rate=processor.sampling_rate, return_tensors="pt")
-            audio_codes = encoder.encode(inputs["input_values"], inputs["padding_mask"]).audio_codes
-            
-            print(audio_codes.shape)
 
+    encoder = EncodecModel.from_pretrained("facebook/encodec_48khz")
+    processor = AutoProcessor.from_pretrained("facebook/encodec_48khz")
+    
+    sequence = []
+    
+    input_files = os.listdir(os.path.join(project_dir,'inputs'))
+    
+    for file_ in input_files:
         
+        input_path = os.path.join(project_dir,'inputs', file_)
+        
+        audio_array, sample_rate = librosa.load(input_path, sr = processor.sampling_rate, mono = False)
+        
+        inputs = processor(raw_audio=audio_array, sampling_rate=processor.sampling_rate, return_tensors="pt")
+        audio_codes = encoder.encode(inputs["input_values"], inputs["padding_mask"]).audio_codes
+        
+        print(audio_codes.shape)
+
+    
 
 if __name__ == "__main__":
     
