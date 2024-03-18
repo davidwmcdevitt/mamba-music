@@ -11,8 +11,10 @@ def parse_args():
     
 
 
-def build_project():
-    pass
+def build_project(args):
+    
+    print(args)
+    
 
 
 
