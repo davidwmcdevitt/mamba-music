@@ -5,6 +5,9 @@ from moviepy.editor import AudioFileClip
 from pytube.exceptions import AgeRestrictedError
 import re
 from tqdm import tqdm
+import warnings
+
+warnings.filterwarnings("ignore")
 
 def parse_args():
     
