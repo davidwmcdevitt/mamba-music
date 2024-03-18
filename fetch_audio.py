@@ -40,9 +40,9 @@ def fetch_audio(args):
             playlist = Playlist(url)
             
             for video in tqdm(playlist.videos):
-                output_path = os.path.join(project_dir, video.title.replace('/', '') + ".mp4")
-                if os.path.exists(output_path):
-                    continue
+                
+                output_path = os.path.join(project_dir, 'inputs')
+                
                 try:
                     audio_stream = video.streams.get_audio_only()
                     audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".mp4")
@@ -52,18 +52,17 @@ def fetch_audio(args):
         else:
             
             video = YouTube(url)
-            output_path = os.path.join(project_dir, video.title.replace('/', '') + ".mp4")
-            if os.path.exists(output_path):
-                pass
-            else:
-                try:
-                    audio_stream = video.streams.get_audio_only()
-                    audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".mp4")
-                except AgeRestrictedError:
-                    print(f"Video {video.title} is age restricted and cannot be downloaded.")
                 
-
+            output_path = os.path.join(project_dir, 'inputs')
+        
+            try:
+                audio_stream = video.streams.get_audio_only()
+                audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".mp4")
+            except AgeRestrictedError:
+                print(f"Video {video.title} is age restricted and cannot be downloaded.")
             
+
+        
 
 if __name__ == "__main__":
     
