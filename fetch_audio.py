@@ -4,7 +4,7 @@ from pytube import Playlist, YouTube
 from moviepy.editor import AudioFileClip
 from pytube.exceptions import AgeRestrictedError
 import re
-import tqdm
+from tqdm import tqdm
 
 def parse_args():
     
@@ -39,8 +39,7 @@ def fetch_audio(args):
             
             playlist = Playlist(url)
             
-            for video_url in tqdm(playlist):
-                video = YouTube(video_url)
+            for video in tqdm(playlist.videos):
                 output_path = os.path.join(project_dir, video.title.replace('/', '') + ".mp4")
                 if os.path.exists(output_path):
                     continue
