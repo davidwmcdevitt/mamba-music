@@ -1,3 +1,12 @@
 causal-conv1d==1.0.0
 mamba-ssm
 transformers
+transformers
+torch
+torchaudio
+matplotlib
+tqdm
+mamba-ssm
+numpy
+soundfile
+librosa

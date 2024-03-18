@@ -1,5 +1,5 @@
 import argparse
-
+import os
 
 def parse_args():
     
@@ -11,10 +11,24 @@ def parse_args():
     return parser.parse_args()
     
 
-
 def build_project(args):
     
-    print(args)
+    project_name = args.project_name
+    project_path = args.project_path
+    
+    project_dir = os.path.join(project_path, project_name)
+    
+    sub_dirs = ['boards', 'inputs', 'generations','models']
+    
+    if not os.path.exists(project_dir):
+        os.makedirs(project_dir)
+    else:
+        print("Directory already exists.")
+    
+    for directory in sub_dirs:
+        directory_path = os.path.join(project_dir, directory)
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
     
 
 
