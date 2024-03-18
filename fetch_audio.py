@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 def parse_args():
     
-    parser = argparse.ArgumentParser(description='Mamba-Music Project Setup')
+    parser = argparse.ArgumentParser(description='Mamba-Music Audio Retrieval')
     
     parser.add_argument('--project_name', type=str, required=True, help='Name of project')
     parser.add_argument('--project_path', type=str, required=True, help='Parent directory of project')
@@ -20,7 +20,6 @@ def parse_args():
     parser.add_argument('--url', type=str, required=True, help='Youtube URL (playlist or video)')
     
     return parser.parse_args()
-
 
 def is_playlist(url):
     return bool(re.search(r'\bplaylist\b', url, re.IGNORECASE))
