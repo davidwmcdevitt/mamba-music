@@ -5,6 +5,7 @@ import librosa
 import warnings
 import torch
 import yaml
+from tqdm import tqdm
 
 warnings.filterwarnings("ignore")
 
@@ -30,7 +31,7 @@ def encode_inputs(args):
     
     input_files = os.listdir(os.path.join(project_dir,'inputs'))
     
-    for file_ in input_files:
+    for file_ in tqdm(input_files):
     
         tensor_name = os.path.splitext(file_)[0] + '.pt'
         
@@ -43,7 +44,7 @@ def encode_inputs(args):
             inputs = processor(raw_audio=audio_array, sampling_rate=processor.sampling_rate, return_tensors="pt")
             audio_codes = encoder.encode(inputs["input_values"], inputs["padding_mask"]).audio_codes
             
-            torch.save(audio_codes, tensor_name + '.pt')
+            torch.save(audio_codes, os.path.join(project_dir,'encodings', tensor_name + '.pt'))
 
     
 def analyze_vocab(args):

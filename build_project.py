@@ -1,5 +1,6 @@
 import argparse
 import os
+import yaml
 
 def parse_args():
     
@@ -29,7 +30,12 @@ def build_project(args):
         directory_path = os.path.join(project_dir, directory)
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
+            
+    yaml_path = os.path.join(project_dir,'configs/configs.yaml')
     
+    if not os.path.exists(yaml_path):
+        with open(yaml_path, 'w') as file:  
+            yaml.dump({}, file)
 
 
 
