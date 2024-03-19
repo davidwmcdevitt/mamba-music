@@ -4,6 +4,7 @@ from transformers import EncodecModel, AutoProcessor
 import librosa
 import warnings
 import torch
+import yaml
 
 warnings.filterwarnings("ignore")
 
@@ -44,6 +45,10 @@ def encode_inputs(args):
             
             torch.save(audio_codes, tensor_name + '.pt')
 
+    
+def analyze_vocab(args):
+    pass
+    
     
 
 if __name__ == "__main__":

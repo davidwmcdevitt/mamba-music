@@ -45,26 +45,32 @@ def fetch_audio(args):
                 
                 output_path = os.path.join(project_dir, 'inputs')
                 
-                try:
-                    audio_stream = video.streams.get_audio_only()
-                    audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".mp4")
-                except AgeRestrictedError:
-                    print(f"Video {video.title} is age restricted and cannot be downloaded.")
-                    
+                file_name = video.title.replace('/', '') + ".wav"
+                
+                if file_name not in os.listdir(output_path):
+                
+                    try:
+                        audio_stream = video.streams.get_audio_only()
+                        audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".wav")
+                    except AgeRestrictedError:
+                        print(f"Video {video.title} is age restricted and cannot be downloaded.")
+                        
         else:
             
             video = YouTube(url)
                 
             output_path = os.path.join(project_dir, 'inputs')
-        
-            try:
-                audio_stream = video.streams.get_audio_only()
-                audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".mp4")
-            except AgeRestrictedError:
-                print(f"Video {video.title} is age restricted and cannot be downloaded.")
             
-
-        
+            if file_name not in os.listdir(output_path):
+            
+                try:
+                    audio_stream = video.streams.get_audio_only()
+                    audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".wav")
+                except AgeRestrictedError:
+                    print(f"Video {video.title} is age restricted and cannot be downloaded.")
+                
+    
+            
 
 if __name__ == "__main__":
     
