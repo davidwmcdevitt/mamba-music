@@ -2,7 +2,10 @@ import argparse
 import os
 from transformers import EncodecModel, AutoProcessor
 import librosa
-import yaml
+import warnings
+import torch
+
+warnings.filterwarnings("ignore")
 
 
 def parse_args():
@@ -14,7 +17,7 @@ def parse_args():
     
     return parser.parse_args()
 
-def analyze_vocab(args):
+def encode_inputs(args):
         
     project_name = args.project_name
     project_path = args.project_path
@@ -24,20 +27,22 @@ def analyze_vocab(args):
     encoder = EncodecModel.from_pretrained("facebook/encodec_48khz")
     processor = AutoProcessor.from_pretrained("facebook/encodec_48khz")
     
-    sequence = []
-    
     input_files = os.listdir(os.path.join(project_dir,'inputs'))
     
     for file_ in input_files:
+    
+        tensor_name = os.path.splitext(file_)[0] + '.pt'
         
-        input_path = os.path.join(project_dir,'inputs', file_)
+        if tensor_name not in os.listdir(os.path.join(project_dir,'encodings')):
         
-        audio_array, sample_rate = librosa.load(input_path, sr = processor.sampling_rate, mono = False)
-        
-        inputs = processor(raw_audio=audio_array, sampling_rate=processor.sampling_rate, return_tensors="pt")
-        audio_codes = encoder.encode(inputs["input_values"], inputs["padding_mask"]).audio_codes
-        
-        print(audio_codes.shape)
+            input_path = os.path.join(project_dir,'inputs', file_)
+            
+            audio_array, sample_rate = librosa.load(input_path, sr = processor.sampling_rate, mono = False)
+            
+            inputs = processor(raw_audio=audio_array, sampling_rate=processor.sampling_rate, return_tensors="pt")
+            audio_codes = encoder.encode(inputs["input_values"], inputs["padding_mask"]).audio_codes
+            
+            torch.save(audio_codes, tensor_name + '.pt')
 
     
 
@@ -45,4 +50,4 @@ if __name__ == "__main__":
     
     args = parse_args()
     
-    analyze_vocab(args)
+    encode_inputs(args)

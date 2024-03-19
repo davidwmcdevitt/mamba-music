@@ -18,7 +18,7 @@ def build_project(args):
     
     project_dir = os.path.join(project_path, project_name)
     
-    sub_dirs = ['boards', 'inputs', 'generations','models','configs']
+    sub_dirs = ['boards', 'inputs', 'generations','models', 'configs', 'encodings']
     
     if not os.path.exists(project_dir):
         os.makedirs(project_dir)
