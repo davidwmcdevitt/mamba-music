@@ -45,15 +45,21 @@ def fetch_audio(args):
                 
                 output_path = os.path.join(project_dir, 'inputs')
                 
-                file_name = video.title.replace('/', '') + ".wav"
+                mp4_name = video.title.replace('/', '') + ".mp4"
+                wav_name = video.title.replace('/', '') + ".wav"
                 
-                if file_name not in os.listdir(output_path):
+                if wav_name not in os.listdir(output_path) and mp4_name not in os.listdir(output_path):
                 
                     try:
                         audio_stream = video.streams.get_audio_only()
-                        audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".wav")
+                        audio_stream.download(output_path=output_path, filename=mp4_name)
                     except AgeRestrictedError:
                         print(f"Video {video.title} is age restricted and cannot be downloaded.")
+                                            
+                                        
+                    clip = AudioFileClip(os.path.join(output_path,mp4_name))
+                    clip.audio.write_audiofile(os.path.join(output_path,wav_name))
+                    os.remove(os.path.join(output_path,mp4_name))
                         
         else:
             
@@ -61,13 +67,21 @@ def fetch_audio(args):
                 
             output_path = os.path.join(project_dir, 'inputs')
             
-            if file_name not in os.listdir(output_path):
+            mp4_name = video.title.replace('/', '') + ".mp4"
+            wav_name = video.title.replace('/', '') + ".wav"
+            
+            if wav_name not in os.listdir(output_path) and mp4_name not in os.listdir(output_path):
             
                 try:
                     audio_stream = video.streams.get_audio_only()
-                    audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".wav")
+                    audio_stream.download(output_path=output_path, filename=video.title.replace('/', '') + ".mp4")
                 except AgeRestrictedError:
                     print(f"Video {video.title} is age restricted and cannot be downloaded.")
+                                        
+                                    
+                clip = AudioFileClip(os.path.join(output_path,mp4_name))
+                clip.audio.write_audiofile(os.path.join(output_path,wav_name))
+                os.remove(os.path.join(output_path,mp4_name))
                 
     
             
