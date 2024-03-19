@@ -58,7 +58,7 @@ def fetch_audio(args):
                                             
                                         
                     clip = AudioFileClip(os.path.join(output_path,mp4_name))
-                    clip.audio.write_audiofile(os.path.join(output_path,wav_name))
+                    clip.write_audiofile(os.path.join(output_path,wav_name))
                     os.remove(os.path.join(output_path,mp4_name))
                         
         else:
@@ -80,7 +80,7 @@ def fetch_audio(args):
                                         
                                     
                 clip = AudioFileClip(os.path.join(output_path,mp4_name))
-                clip.audio.write_audiofile(os.path.join(output_path,wav_name))
+                clip.write_audiofile(os.path.join(output_path,wav_name))
                 os.remove(os.path.join(output_path,mp4_name))
                 
     
