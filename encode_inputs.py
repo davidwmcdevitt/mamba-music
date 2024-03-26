@@ -33,7 +33,7 @@ def encode_inputs(args):
     
     for file_ in tqdm(input_files):
     
-        tensor_name = os.path.splitext(file_)[0] + '.pt'
+        tensor_name = os.path.splitext(file_)[0]
         
         if tensor_name not in os.listdir(os.path.join(project_dir,'encodings')):
         
