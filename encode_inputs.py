@@ -40,6 +40,9 @@ def encode_inputs(args):
     
         tensor_name = os.path.splitext(file_)[0]
         
+        print(tensor_name)
+        print(os.listdir(os.path.join(project_dir,'encodings')))
+        
         if tensor_name not in os.listdir(os.path.join(project_dir,'encodings')):
         
             input_path = os.path.join(project_dir,'inputs', file_)
