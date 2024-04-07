@@ -4,11 +4,16 @@ from transformers import EncodecModel, AutoProcessor
 import librosa
 import warnings
 import torch
-import yaml
 from tqdm import tqdm
+import numpy as np
 
 warnings.filterwarnings("ignore")
 
+def token_lookup(encoding_tuple, unique_tuples):
+  return unique_tuples.index(encoding_tuple)
+
+def tuple_lookup(token, unique_tuples):
+  return unique_tuples[token]
 
 def parse_args():
     
@@ -48,7 +53,56 @@ def encode_inputs(args):
 
     
 def analyze_vocab(args):
-    pass
+        
+    project_name = args.project_name
+    project_path = args.project_path
+    
+    project_dir = os.path.join(project_path, project_name)
+    encodings_dir = os.path.join(project_dir,'encodings')
+    
+    encodings = os.listdir(encodings_dir)
+    
+    for file_ in tqdm(encodings):
+        
+          input_path = os.path.join(encodings_dir, file_)
+        
+          audio_codes = torch.load(input_path)
+        
+          if file_ == encodings[0]:
+            sequence = audio_codes
+          else:
+            sequence = torch.cat((sequence, audio_codes), dim = 0)
+        
+          tupled_sequence = []
+        
+          for row in range(sequence.shape[0]):
+            for digit in range(150):
+              tupled_sequence.append((int(sequence[row,0,0,digit]), int(sequence[row,0,1,digit])))
+        
+          track_tuples = []
+          for row in range(audio_codes.shape[0]):
+            for digit in range(150):
+              track_tuples.append(tuple((int(audio_codes[row,0,0,digit]), int(audio_codes[row,0,1,digit]))))
+        
+          if file_ == encodings[0]:
+            tracks = [track_tuples]
+          else:
+            tracks.append(track_tuples)
+        
+    unique_tuples, counts = np.unique(tupled_sequence, axis=0, return_counts=True)
+    
+    unique_tuples = [tuple(row) for row in unique_tuples]
+    
+    np.save(os.path.join(project_dir,'configs/vocab.npy'), unique_tuples)
+    
+    for track in tqdm(tracks):
+
+        tokenized_track = [token_lookup(tuple_,unique_tuples) for tuple_ in track]
+        
+        torch.save(tokenized_track, os.path.join(project_dir,'tokenized', file_ + '.pt'))
+
+    
+    
     
     
 
