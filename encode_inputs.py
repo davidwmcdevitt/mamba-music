@@ -93,7 +93,9 @@ def analyze_vocab(args):
     
     unique_tuples = [tuple(row) for row in unique_tuples]
     
-    np.save(os.path.join(project_dir,'configs/vocab.npy'), unique_tuples)
+    vocab_size = len(unique_tuples)
+    
+    np.save(os.path.join(project_dir, f'configs/vocab_{vocab_size}.npy'), unique_tuples)
     
     for track in tqdm(tracks):
 
