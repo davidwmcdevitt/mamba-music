@@ -38,10 +38,7 @@ def encode_inputs(args):
     
     for file_ in tqdm(input_files):
     
-        tensor_name = os.path.splitext(file_)[0]
-        
-        print(tensor_name)
-        print(os.listdir(os.path.join(project_dir,'encodings')))
+        tensor_name = os.path.splitext(file_)[0] + '.pt'
         
         if tensor_name not in os.listdir(os.path.join(project_dir,'encodings')):
         
@@ -52,7 +49,7 @@ def encode_inputs(args):
             inputs = processor(raw_audio=audio_array, sampling_rate=processor.sampling_rate, return_tensors="pt")
             audio_codes = encoder.encode(inputs["input_values"], inputs["padding_mask"]).audio_codes
             
-            torch.save(audio_codes, os.path.join(project_dir,'encodings', tensor_name + '.pt'))
+            torch.save(audio_codes, os.path.join(project_dir,'encodings', tensor_name))
 
     
 def analyze_vocab(args):
