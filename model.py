@@ -27,8 +27,8 @@ class Block(nn.Module):
       expand=args.expand,    # Block expansion factor
   ).to("cuda")
     self.ffn = FeedForward(args)
-    self.ln1 = nn.LayerNorm(args)
-    self.ln2 = nn.LayerNorm(args)
+    self.ln1 = nn.LayerNorm(args.n_embed)
+    self.ln2 = nn.LayerNorm(args.n_embed)
 
   def forward(self, x):
     x = x + self.sa_head(self.ln1(x))

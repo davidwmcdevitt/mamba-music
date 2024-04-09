@@ -14,6 +14,10 @@ def parse_args():
     
     parser.add_argument('--configs', type=str, required=False, default='base_configs.yaml', help='Filename of configuration directory')
     
+    parser.add_argument('--continue_train', action='store_false', required=False, help='Continue training')
+    parser.add_argument('--checkpoint_name', type=str, required=False, default='base_configs.yaml', help='Filename of checkpoint state dict')
+    
+    
     return parser.parse_args()
 
 def load_configs(args):
@@ -31,16 +35,32 @@ def load_configs(args):
         if vocab_file.startswith('vocab_'):
             configs['vocab_file'] = vocab_file
             configs['vocab_size'] = int(re.search(r'\d+', vocab_file).group())
+            
+    configs['device'] = "cuda" if torch.cuda.is_available() else "cpu"
+    configs['lr'] = float(configs['lr'])
 
     for key, value in configs.items():
         setattr(args, key, value)
 
+    print(args)
     return args
 
 def build_model(args):
+    
+    project_name = args.project_name
+    project_path = args.project_path
+    
+    project_dir = os.path.join(project_path, project_name)
 
     model = MambaAudioModel(args).to(args.device)
-    optimizier = torch.optim.AdamW(model.parameters(),lr=args.lr)
+    print(model)
+    
+    if args.continue_train:
+        checkpoint_path = os.path.join(project_dir,'checkpoint', args.checkpoint_name)
+        checkpoint = torch.load(checkpoint_path)
+        model.load_state_dict(checkpoint)
+        
+    return model  
 
 if __name__ == "__main__":
     
@@ -48,4 +68,6 @@ if __name__ == "__main__":
     
     args = load_configs(args)
     
-    build_model(args)
+    model = build_model(args)
+    
+    optimizier = torch.optim.AdamW(model.parameters(),lr=args.lr)
