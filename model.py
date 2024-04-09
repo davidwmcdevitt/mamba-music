@@ -26,9 +26,9 @@ class Block(nn.Module):
       d_conv=args.d_conv,    # Local convolution width
       expand=args.expand,    # Block expansion factor
   ).to("cuda")
-    self.ffn = FeedForward(args.n_embed)
-    self.ln1 = nn.LayerNorm(args.n_embed)
-    self.ln2 = nn.LayerNorm(args.n_embed)
+    self.ffn = FeedForward(args)
+    self.ln1 = nn.LayerNorm(args)
+    self.ln2 = nn.LayerNorm(args)
 
   def forward(self, x):
     x = x + self.sa_head(self.ln1(x))
@@ -42,7 +42,7 @@ class MambaAudioModel(nn.Module):
     self.token_embedding_table = nn.Embedding(args.vocab_size,args.n_embed)
     self.position_embedding_table = nn.Embedding(args.block_size,args.n_embed)
     self.lm_head = nn.Linear(args.n_embed,args.vocab_size)
-    self.ffn = FeedForward(args.n_embed)
+    self.ffn = FeedForward(args)
     self.blocks = nn.Sequential(*[Block(args) for _ in range(args.n_layers)])
     
     self.device = args.device
