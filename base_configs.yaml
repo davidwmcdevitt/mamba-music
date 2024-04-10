@@ -1,0 +1,20 @@
+# Model Parameters #
+n_embed: 128
+n_heads: 12
+n_layers: 12
+d_state: 16
+d_conv: 4
+expand: 1
+dropout: 0.2
+block_size: 150
+
+# Data Parameters #
+batch_size: 4
+load_cap: 1000
+
+# Training Parameters #
+iterations: 100
+num_epochs: 25
+test_duration: 8
+prompt_length: 150
+lr: 1e-4

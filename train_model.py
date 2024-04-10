@@ -84,16 +84,13 @@ def prepare_tracks(args):
         
     for track_name in track_list:
             
-            if track_name == os.listdir(tracks_dir)[0]:
-                tokenized_tracks = [torch.load(os.path.join(tracks_dir,track_name))]
-            else:
-                tokenized_track = torch.load(os.path.join(tracks_dir,track_name))
-                tokenized_tracks.append(tokenized_track)
+        if track_name == os.listdir(tracks_dir)[0]:
+            tokenized_tracks = [torch.load(os.path.join(tracks_dir,track_name))]
+        else:
+            tokenized_track = torch.load(os.path.join(tracks_dir,track_name))
+            tokenized_tracks.append(tokenized_track)
                 
     return tokenized_tracks
-
-
-            
 
 
 if __name__ == "__main__":
