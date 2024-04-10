@@ -114,6 +114,8 @@ if __name__ == "__main__":
     
     generated_tokens = torch.zeros((1, 1), dtype=torch.int64)
     
+    '''
+    
     for epoch in range(args.num_epochs):
     
         print(f"Epoch {epoch}")
@@ -156,3 +158,4 @@ if __name__ == "__main__":
             del batch_input, batch_target, logits, loss
             torch.cuda.empty_cache()
 
+    '''
