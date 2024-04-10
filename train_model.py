@@ -4,6 +4,10 @@ from model import MambaAudioModel
 import yaml
 import re
 import torch
+import random
+import numpy as np
+from tqdm import tqdm
+import psutil
 
 def parse_args():
     
@@ -14,7 +18,7 @@ def parse_args():
     
     parser.add_argument('--configs', type=str, required=False, default='base_configs.yaml', help='Filename of configuration directory')
     
-    parser.add_argument('--continue_train', action='store_false', required=False, help='Continue training')
+    parser.add_argument('--continue_train', action='store_true', required=False, default=False, help='Continue training')
     parser.add_argument('--checkpoint_name', type=str, required=False, default='base_configs.yaml', help='Filename of checkpoint state dict')
     
     
@@ -62,6 +66,36 @@ def build_model(args):
         
     return model  
 
+def prepare_tracks(args):
+    
+    project_name = args.project_name
+    project_path = args.project_path
+    
+    project_dir = os.path.join(project_path, project_name)
+    tracks_dir = os.path.join(project_dir,'tokenized')
+    
+    if len(os.listdir(tracks_dir) > args.dataloader_cap):
+        
+        track_list = random.sample(os.listdir(tracks_dir), args.dataloader_cap)
+        
+    else:
+        
+        track_list =os.listdir(tracks_dir)
+        
+    for track_name in track_list:
+            
+            if track_name == os.listdir(tracks_dir)[0]:
+                tokenized_tracks = [torch.load(os.path.join(tracks_dir,track_name))]
+            else:
+                tokenized_track = torch.load(os.path.join(tracks_dir,track_name))
+                tokenized_tracks.append(tokenized_track)
+                
+    return tokenized_tracks
+
+
+            
+
+
 if __name__ == "__main__":
     
     args = parse_args()
@@ -71,3 +105,57 @@ if __name__ == "__main__":
     model = build_model(args)
     
     optimizier = torch.optim.AdamW(model.parameters(),lr=args.lr)
+    
+    tracks = prepare_tracks(args)
+    
+    loss_list = []
+    
+    system_memory = []
+    
+    gen_audio_array = np.zeros(((48000, 2)))
+    gen_audio_spec = np.zeros((128, 94))
+    
+    generated_tokens = torch.zeros((1, 1), dtype=torch.int64)
+    
+    for epoch in range(args.num_epochs):
+    
+        print(f"Epoch {epoch}")
+        model.train()
+    
+        system_memory.append(psutil.virtual_memory().percent)
+    
+        for _ in tqdm(range(args.iterations)):
+            
+            batch = []
+
+        for _ in range(args.batch_size):
+
+            track = tracks[random.randint(0,len(tracks)-1)]
+
+            starting_point = random.randint(0,len(track)-args.block_size)
+
+            clip = track[starting_point:starting_point+args.block_size]
+
+            batch.append(torch.tensor(clip, dtype=torch.long))
+
+        batch = torch.stack(batch)
+
+        batch_input = batch[:,:-1].contiguous().to(args.device)
+        batch_target = batch[:,1:].contiguous().to(args.device)
+
+        logits, loss = model(batch_input, batch_target)
+
+        loss.backward()
+        torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), 1.0)
+
+        optimizier.step()
+
+        optimizier.zero_grad()
+
+        loss_list.append(loss.item())
+
+        real_codes = batch_input[0,:args.test_duration*150].detach().cpu().numpy()
+
+        del batch_input, batch_target, logits, loss
+        torch.cuda.empty_cache()
+
