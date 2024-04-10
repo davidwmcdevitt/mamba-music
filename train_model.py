@@ -74,9 +74,9 @@ def prepare_tracks(args):
     project_dir = os.path.join(project_path, project_name)
     tracks_dir = os.path.join(project_dir,'tokenized')
     
-    if len(os.listdir(tracks_dir) > args.dataloader_cap):
+    if len(os.listdir(tracks_dir)) > args.load_cap:
         
-        track_list = random.sample(os.listdir(tracks_dir), args.dataloader_cap)
+        track_list = random.sample(os.listdir(tracks_dir), args.load_cap)
         
     else:
         
@@ -128,34 +128,34 @@ if __name__ == "__main__":
             
             batch = []
 
-        for _ in range(args.batch_size):
+            for _ in range(args.batch_size):
 
-            track = tracks[random.randint(0,len(tracks)-1)]
+                track = tracks[random.randint(0,len(tracks)-1)]
 
-            starting_point = random.randint(0,len(track)-args.block_size)
+                starting_point = random.randint(0,len(track)-args.block_size)
 
-            clip = track[starting_point:starting_point+args.block_size]
+                clip = track[starting_point:starting_point+args.block_size]
 
-            batch.append(torch.tensor(clip, dtype=torch.long))
+                batch.append(torch.tensor(clip, dtype=torch.long))
 
-        batch = torch.stack(batch)
+            batch = torch.stack(batch)
 
-        batch_input = batch[:,:-1].contiguous().to(args.device)
-        batch_target = batch[:,1:].contiguous().to(args.device)
+            batch_input = batch[:,:-1].contiguous().to(args.device)
+            batch_target = batch[:,1:].contiguous().to(args.device)
 
-        logits, loss = model(batch_input, batch_target)
+            logits, loss = model(batch_input, batch_target)
 
-        loss.backward()
-        torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), 1.0)
+            loss.backward()
+            torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), 1.0)
 
-        optimizier.step()
+            optimizier.step()
 
-        optimizier.zero_grad()
+            optimizier.zero_grad()
 
-        loss_list.append(loss.item())
+            loss_list.append(loss.item())
 
-        real_codes = batch_input[0,:args.test_duration*150].detach().cpu().numpy()
+            real_codes = batch_input[0,:args.test_duration*150].detach().cpu().numpy()
 
-        del batch_input, batch_target, logits, loss
-        torch.cuda.empty_cache()
+            del batch_input, batch_target, logits, loss
+            torch.cuda.empty_cache()
 
