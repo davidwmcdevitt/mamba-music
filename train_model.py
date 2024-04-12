@@ -8,6 +8,7 @@ import random
 import numpy as np
 from tqdm import tqdm
 import psutil
+from datetime import datetime
 
 def parse_args():
     
@@ -92,6 +93,27 @@ def prepare_tracks(args):
                 
     return tokenized_tracks
 
+def save_model(args):
+    
+    project_name = args.project_name
+    project_path = args.project_path
+    
+    project_dir = os.path.join(project_path, project_name)
+    model_dir = os.path.join(project_dir,'models')
+    
+    current_datetime = datetime.now()
+    
+    datetime_str = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
+    
+    model_filename = f"model_{datetime_str}.pth"
+    
+    model_path = os.path.join(model_dir, model_filename)
+    torch.save(model.state_dict(), model_path)
+    
+    print("Model saved as:", model_path)
+    
+    
+
 
 if __name__ == "__main__":
     
@@ -103,8 +125,6 @@ if __name__ == "__main__":
     
     optimizier = torch.optim.AdamW(model.parameters(),lr=args.lr)
     
-    tracks = prepare_tracks(args)
-    
     loss_list = []
     
     system_memory = []
@@ -115,6 +135,8 @@ if __name__ == "__main__":
     generated_tokens = torch.zeros((1, 1), dtype=torch.int64)
 
     for epoch in range(args.num_epochs):
+    
+        tracks = prepare_tracks(args)
 
         print(f"Epoch {epoch}")
         model.train()
@@ -153,4 +175,6 @@ if __name__ == "__main__":
 
             del batch_input, batch_target, logits, loss
             torch.cuda.empty_cache()
+            
+    
 
