@@ -113,16 +113,14 @@ if __name__ == "__main__":
     gen_audio_spec = np.zeros((128, 94))
     
     generated_tokens = torch.zeros((1, 1), dtype=torch.int64)
-    
-    '''
-    
+
     for epoch in range(args.num_epochs):
-    
+
         print(f"Epoch {epoch}")
         model.train()
-    
+
         system_memory.append(psutil.virtual_memory().percent)
-    
+
         for _ in tqdm(range(args.iterations)):
             
             batch = []
@@ -153,9 +151,6 @@ if __name__ == "__main__":
 
             loss_list.append(loss.item())
 
-            real_codes = batch_input[0,:args.test_duration*150].detach().cpu().numpy()
-
             del batch_input, batch_target, logits, loss
             torch.cuda.empty_cache()
 
-    '''
