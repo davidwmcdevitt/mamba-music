@@ -93,7 +93,7 @@ def prepare_tracks(args):
                 
     return tokenized_tracks
 
-def save_model(args):
+def save_model(model):
     
     project_name = args.project_name
     project_path = args.project_path
@@ -175,6 +175,8 @@ if __name__ == "__main__":
 
             del batch_input, batch_target, logits, loss
             torch.cuda.empty_cache()
+            
+    save_model(model)
             
     
 
