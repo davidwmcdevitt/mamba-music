@@ -22,7 +22,7 @@ def parse_args():
     parser.add_argument('--continue_train', action='store_true', required=False, default=False, help='Continue training')
     parser.add_argument('--checkpoint_name', type=str, required=False, help='Filename of checkpoint state dict')
     
-    parser.add_argument('--model_name', type=str, required=False, default='model.pt', help='Filename of model state dict')
+    parser.add_argument('--model_name', type=str, required=False, help='Filename of model state dict')
     parser.add_argument('--save_frequency', type=int, required=False, help='Save model every X epochs')
     
     return parser.parse_args()
@@ -106,6 +106,8 @@ def save_model(model, args):
     
     if args.model_name:
         model_filename = args.model_name + '.pt'
+    elif args.continue_train:
+        model_filename = args.checkpoint_name + '.pt'
     else:
         model_filename = f"{args.project_name}_{args.datetime}.pt"
     
@@ -180,9 +182,9 @@ if __name__ == "__main__":
             
             if epoch % 5 == 0:
                 
-                save_model(model)
+                save_model(model, args)
                 
-    save_model(model)
+    save_model(model, args)
             
     
 
