@@ -105,9 +105,9 @@ def save_model(model, args):
     model_dir = os.path.join(project_dir,'models')
     
     if args.model_name:
-        model_filename = args.model_name + '.pt'
+        model_filename = args.model_name
     elif args.continue_train:
-        model_filename = args.checkpoint_name + '.pt'
+        model_filename = args.checkpoint_name
     else:
         model_filename = f"{args.project_name}_{args.datetime}.pt"
     
