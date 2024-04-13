@@ -20,11 +20,10 @@ def parse_args():
     parser.add_argument('--configs', type=str, required=False, default='base_configs.yaml', help='Filename of configuration directory')
     
     parser.add_argument('--continue_train', action='store_true', required=False, default=False, help='Continue training')
-    parser.add_argument('--checkpoint_name', type=str, required=False, default='base_configs.yaml', help='Filename of checkpoint state dict')
+    parser.add_argument('--checkpoint_name', type=str, required=False, help='Filename of checkpoint state dict')
     
     parser.add_argument('--model_name', type=str, required=False, default='model.pt', help='Filename of model state dict')
     parser.add_argument('--save_frequency', type=int, required=False, help='Save model every X epochs')
-    
     
     return parser.parse_args()
 
@@ -65,7 +64,7 @@ def build_model(args):
     print(model)
     
     if args.continue_train:
-        checkpoint_path = os.path.join(project_dir,'checkpoint', args.checkpoint_name)
+        checkpoint_path = os.path.join(project_dir,'models', args.checkpoint_name)
         checkpoint = torch.load(checkpoint_path)
         model.load_state_dict(checkpoint)
         
