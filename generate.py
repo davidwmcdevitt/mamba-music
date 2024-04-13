@@ -26,7 +26,7 @@ def parse_args():
     parser.add_argument('--prompt', type=str, required=True, default='noise', choices=['noise', 'sample','input'], help='Context for the model')
     parser.add_argument('--prompt_length', type=int, required=True, default=1, help='Prompt duration in seconds')
     parser.add_argument('--keep_prompt', action='store_true', required=False, default=False, help='Keep prompt in generated audio file')
-    parser.add_argument('--input_path', type=str, required=True, help='Prompt input file')
+    parser.add_argument('--input_path', type=str, required=False, help='Prompt input file')
     
     parser.add_argument('--gen_length', type=int, required=True, default=1, help='Prompt duration in seconds')
     
@@ -86,7 +86,7 @@ def load_sample(args):
     
     track_list = os.listdir(tracks_dir)
     
-    track = torch.load(os.path.join(tracks_dir,random.sample(track_list)))
+    track = torch.load(os.path.join(tracks_dir,random.sample(track_list,1)[0]))
 
     starting_point = random.randint(0,len(track)-args.prompt_length)
 
@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
     generated_audio_codes = torch.stack((acoustic_clip, semantic_clip), dim=0).view(2,150 * args.gen_length).unsqueeze(0).unsqueeze(0)
 
-    decoder_padding = torch.ones(1, processor.sample_rate*(args.gen_length))
+    decoder_padding = torch.ones(1, processor.sampling_rate*(args.gen_length))
 
     decoder_outputs = encoder.decode(generated_audio_codes, [None], decoder_padding)
 
@@ -181,7 +181,6 @@ if __name__ == "__main__":
     generation_path = os.path.join(args.project_path, args.project_name, 'generations', f'{args.project_name}_{args.gen_length}s_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.wav')
 
     sf.write(generation_path, generated_audio, processor.sampling_rate)
+    print(f'Generation saved at {generation_path}')
         
         
-    
-    
