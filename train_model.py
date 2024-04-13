@@ -22,6 +22,9 @@ def parse_args():
     parser.add_argument('--continue_train', action='store_true', required=False, default=False, help='Continue training')
     parser.add_argument('--checkpoint_name', type=str, required=False, default='base_configs.yaml', help='Filename of checkpoint state dict')
     
+    parser.add_argument('--model_name', type=str, required=False, default='model.pt', help='Filename of model state dict')
+    parser.add_argument('--save_frequency', type=int, required=False, help='Save model every X epochs')
+    
     
     return parser.parse_args()
 
@@ -43,10 +46,11 @@ def load_configs(args):
             
     configs['device'] = "cuda" if torch.cuda.is_available() else "cpu"
     configs['lr'] = float(configs['lr'])
-
+    configs['datetime'] = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    
     for key, value in configs.items():
         setattr(args, key, value)
-
+        
     print(args)
     return args
 
@@ -93,7 +97,7 @@ def prepare_tracks(args):
                 
     return tokenized_tracks
 
-def save_model(model):
+def save_model(model, args):
     
     project_name = args.project_name
     project_path = args.project_path
@@ -101,19 +105,16 @@ def save_model(model):
     project_dir = os.path.join(project_path, project_name)
     model_dir = os.path.join(project_dir,'models')
     
-    current_datetime = datetime.now()
-    
-    datetime_str = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
-    
-    model_filename = f"model_{datetime_str}.pth"
+    if args.model_name:
+        model_filename = args.model_name + '.pt'
+    else:
+        model_filename = f"{args.project_name}_{args.datetime}.pt"
     
     model_path = os.path.join(model_dir, model_filename)
     torch.save(model.state_dict(), model_path)
     
     print("Model saved as:", model_path)
     
-    
-
 
 if __name__ == "__main__":
     
@@ -176,6 +177,12 @@ if __name__ == "__main__":
             del batch_input, batch_target, logits, loss
             torch.cuda.empty_cache()
             
+        if args.save_frequency:
+            
+            if epoch % 0 == 0:
+                
+                save_model(model)
+                
     save_model(model)
             
     
