@@ -139,7 +139,7 @@ def analyze_vocab(args):
     vocab_size = len(unique_tuples)
     np.save(os.path.join(project_dir, f'configs/vocab_{vocab_size}.npy'), unique_tuples)
 
-    for track, file_ in zip(tracks, encodings):
+    for track, file_ in tqdm(zip(tracks, encodings), mininterval=10):
         tokenized_path = os.path.join(tokens_dir, file_)
         if not os.path.exists(tokenized_path):
             tokenized_track = [token_lookup(tuple_, unique_tuples) for tuple_ in track]
