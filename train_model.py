@@ -180,7 +180,7 @@ if __name__ == "__main__":
             
         if args.save_frequency:
             
-            if epoch % 5 == 0:
+            if epoch % 2 == 0:
                 
                 save_model(model, args)
                 
