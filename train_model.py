@@ -10,7 +10,7 @@ from tqdm import tqdm
 import psutil
 from datetime import datetime
 import matplotlib.pyplot as plt
-%matplotlib inline
+from IPython import display
 
 def parse_args():
     
@@ -121,23 +121,42 @@ def save_model(model, args):
     print("Model saved as:", model_path)
     
     
-def print_board(args):
-    print('board here')
+def print_board(args, loss_list):
+    
+    project_name = args.project_name
+    project_path = args.project_path
+    
+    project_dir = os.path.join(project_path, project_name)
+    boards_dir = os.path.join(project_dir,'boards')
     
     system_memory.append(psutil.virtual_memory().percent)
     
-    display.clear_output(wait=True)
     plt.figure(figsize=(8, 8))
-    gs = plt.GridSpec(1, 1, width_ratios=[1, 1])
+    gs = plt.GridSpec(1, 1, width_ratios=[1])
     ax1 = plt.subplot(gs[0])
     ax1.plot(loss_list, label='Total Loss')
     ax1.set_title('Losses')
     ax1.set_xlabel('Iterations')
     ax1.set_ylabel('Loss')
     ax1.legend()
+
+    # Calculate and print average loss over the last 100, 1000, and 10000 steps
+    board_avg = np.mean(loss_list[-args.board_frequency:])
+    board_avg_2 = np.mean(loss_list[--args.board_frequency*2:])
+    board_avg_4 = np.mean(loss_list[--args.board_frequency*4:])
+    board_avg_8 = np.mean(loss_list[--args.board_frequency*8:])
     
-    display.display(plt.gcf())
+    print(f'Board Average 1x: {board_avg}')
+    print(f'Board Average 2x: {board_avg_2}')
+    print(f'Board Average 4x: {board_avg_4}')
+    print(f'Board Average 8x: {board_avg_8}')
+
+    # Save the plot
+    save_path = os.path.join(boards_dir, 'loss_plot.png')
+    plt.savefig(save_path)
     plt.close()
+
+    print(f'Plot saved at: {save_path}')
     
 
 if __name__ == "__main__":
@@ -201,9 +220,9 @@ if __name__ == "__main__":
             del batch_input, batch_target, logits, loss
             torch.cuda.empty_cache()
             
-            if args.board_frequency != 0 
+            if args.board_frequency != 0: 
                 if idx % args.board_frequency == 0:
-                    print_board(args)
+                    print_board(args, loss_list)
             
         if args.save_frequency:
             
